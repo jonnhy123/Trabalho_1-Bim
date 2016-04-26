@@ -28,9 +28,22 @@ public abstract class ClienteDao<T, K> implements Dao<T, K>{
 	
 	@Override
 	public void salvar(T t) {
-		// TODO Auto-generated method stub
-		
-	}
+		try {
+            ps = st.getSqlInsert(con, t);
+            ps.executeUpdate();
+            ps.close();
+
+            System.out.println("Cliente cadastrado com sucesso!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 	@Override
 	public T buscar(K k) {
