@@ -111,8 +111,31 @@ public class Start extends SqlGen{
 	@Override
 	protected String getDropTable(Connection con, Object obj) {
 		// TODO Auto-generated method stub
-		return null;
-	}
+		try{
+		String nomeDaTabela;
+		StringBuilder sb = new StringBuilder();
+		
+		Class<?> classe1 = obj.getClass();
+		
+		if(classe1.isAnnotationPresent(Tabela.class)){
+			Tabela tabela = classe1.getAnnotation(Tabela.class);
+			nomeDaTabela = tabela.value();
+		}else{
+			nomeDaTabela = classe1.getSimpleName().toUpperCase();
+		}
+		
+		sb.append("DROP TABLE ").append(nomeDaTabela).append(";");
+		String apaga = sb.toString();
+		
+		System.out.println(apaga);
+		Statement executa = con.createStatement();
+		executa.executeUpdate(apaga);
+		return apaga;
+	 } catch (SQLException e) {
+         e.printStackTrace();
+         return null;
+     }
+ }
 
 	@Override
 	protected PreparedStatement getSqlInsert(Connection con, Object obj) {
