@@ -26,7 +26,7 @@ public abstract class ClienteDao<T, K> implements Dao<T, K>{
 	private Connection con = ConexaoComBanco.ConectaDB().abrir();
 	private Start st = new Start();
 	private List<Cliente> list = null;
-	
+	//
 	@Override
 	public void salvar(T t) {
 		try {
