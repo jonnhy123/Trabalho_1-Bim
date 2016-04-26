@@ -11,7 +11,7 @@ public class ConexaoComBanco {
 	private String url = "jdbc:h2:~/test";
 	private String driver = "org.h2.Driver";
 	private String senha = "sa";
-	private String usuario = "sa";
+	private String usuario = "sa"; 
 	
 	public ConexaoComBanco(){};//Construtor
 	
