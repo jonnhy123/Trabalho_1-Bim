@@ -15,14 +15,29 @@ public class ConexaoComBanco {
 	
 	public ConexaoComBanco(){};//Construtor
 	
-	public Connection abrir() throws ClassNotFoundException, SQLException{
-		Class.forName(driver);
-		con = DriverManager.getConnection(url, usuario, senha);
+	public Connection abrir() {
+		try {
+			Class.forName(driver);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			con = DriverManager.getConnection(url, usuario, senha);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return con;
 	}
 	
-	public void fexar() throws SQLException{
-		con.close();
+	public void fexar() {
+		try {
+			con.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public static ConexaoComBanco ConectaDB() {
