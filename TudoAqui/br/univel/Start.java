@@ -3,6 +3,8 @@ package br.univel;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class Start extends SqlGen{
 
@@ -11,6 +13,7 @@ public class Start extends SqlGen{
 	@Override
 	protected String getCreateTable(Connection con, Object obj) {
 		// TODO Auto-generated method stub
+	    try {
 		String nomeDaTabela;
 		Class<?> classe1 = obj.getClass();
 		
@@ -35,11 +38,74 @@ public class Start extends SqlGen{
 			
 			if(field.isAnnotationPresent(Coluna.class)){
 				Coluna anotacaoNaColuna = field.getAnnotation(Coluna.class);
-				
+				if(anotacaoNaColuna.nome().isEmpty()){
+					nomeDaColuna = field.getName().toUpperCase();
+				}else{
+					nomeDaColuna = anotacaoNaColuna.nome();
+				}
+			}else{
+				nomeDaColuna = field.getName().toUpperCase();
+			}
+			
+			Class<?> parametros = field.getType();
+			
+			if(parametros.equals(String.class)){
+				if(field.getAnnotation(Coluna.class).tamanho() > -1){
+					TipoDaColuna = "VARCHAR(" + field.getAnnotation(Coluna.class).tamanho() + ")";
+				}else{
+					TipoDaColuna = "VARCHAR(100)";
+				}
+			}else if(parametros.equals(int.class)){
+				if(field.getAnnotation(Coluna.class).pk() == true){
+					TipoDaColuna = "INT NOT NULL";
+				}else{
+					TipoDaColuna = "INT";
+				}
+			}else if(parametros.isEnum()){
+				TipoDaColuna = "INT";
+			}
+			if(i > 0){
+				sb.append(",");
 			}
 		}
 		
-		return null;
+		sb.append(", PRIMARY KEY(");
+		for (int i = 0; i < atributosDeclarados.length; i++) {
+			int vlr = 0;
+			Field fields = atributosDeclarados[i];
+			
+			if(fields.isAnnotationPresent(Coluna.class)){
+				Coluna anotacaoNaColuna = fields.getAnnotation(Coluna.class);
+				if(anotacaoNaColuna.pk()){
+					if (vlr > 0) {
+						sb.append(", ");
+					}
+					if(anotacaoNaColuna.nome().isEmpty()){
+						sb.append(fields.getName());
+					}
+					vlr++;
+				}
+			}
+			if(i == atributosDeclarados.length - 1){
+				sb.append(")");
+			}
+		}
+		sb.append(");\n");
+		
+		String criando = sb.toString();
+		System.out.println(criando);
+		Statement executa = con.createStatement();
+		executa.executeUpdate(criando);
+		
+		return criando;
+		
+	 } catch (SecurityException e) {
+         throw new RuntimeException(e);
+     } catch (SQLException e) {
+         e.printStackTrace();
+         return null;
+     }
+		
 	}
 
 	@Override
